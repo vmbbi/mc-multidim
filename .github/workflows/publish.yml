@@ -33,10 +33,33 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
 
-      - name: make Gradle Executable
+      - name: Make Gradle Executable
         run: chmod +x gradlew
 
-      - name: Publish to Codeberg Maven
-        env:
-          CODEBERG_TOKEN: ${{ secrets.CODEBERG_TOKEN }}
-        run: ./gradlew publishAllPublicationsToCodebergRepository
+      - name: Build Maven Repository
+        run: ./gradlew publishAllPublicationsToLocalMavenRepository
+
+      - name: Checkout target Codeberg repository
+        uses: actions/checkout@v4
+        with:
+          repository: vmbbi/maven
+          token: ${{ secrets.CODEBERG_TOKEN }}
+          path: target-repo
+
+      - name: Copy build artifacts and push to Codeberg
+        run: |
+          # Copy built artifacts into the target repo directory
+          cp -R build/repo/* target-repo/
+          
+          cd target-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git add .
+          # Check if there are changes before committing
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: publish artifacts [skip ci]"
+            git push https://${{ secrets.CODEBERG_TOKEN }}@codeberg.org/vmbbi/maven.git HEAD:pages
+          else
+            echo "No changes to commit."
+          fi

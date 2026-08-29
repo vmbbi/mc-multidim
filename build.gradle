@@ -86,17 +86,10 @@ publishing {
 
     // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
     repositories {
+        // Build directly into a local folder for git pushing
         maven {
-            name = "Codeberg"
-            url = uri("https://codeberg.org/api/packages/vmbbi/maven")
-
-            credentials(HttpHeaderCredentials) {
-                name = "Authorization"
-                value = "token " + (findProperty("codebergToken") ?: System.getenv("CODEBERG_TOKEN"))
-            }
-            authentication {
-                header(HttpHeaderAuthentication)
-            }
+            name = "LocalMaven"
+            url = layout.buildDirectory.dir("repo")
         }
     }
 }
