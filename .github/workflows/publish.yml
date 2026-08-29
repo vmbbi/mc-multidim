@@ -56,7 +56,7 @@ jobs:
           # Check if there are changes before committing
           if ! git diff --cached --quiet; then
             git commit -m "chore: publish artifacts [skip ci]"
-            git push https://${{ secrets.CODEBERG_TOKEN }}@codeberg.org/vmbbi/maven.git HEAD:maven
+            git push https://${{ secrets.CODEBERG_TOKEN }}@codeberg.org/vmbbi/pages.git HEAD:maven
           else
             echo "No changes to commit."
           fi
