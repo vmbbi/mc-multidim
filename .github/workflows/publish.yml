@@ -47,8 +47,8 @@ jobs:
             cd target-repo
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
-  
-            git fetch origin master
+          
+            git fetch origin master:refs/remotes/origin/master
             git merge origin/master --no-edit
 
       - name: Copy build artifacts and push to Codeberg
