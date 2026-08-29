@@ -41,7 +41,7 @@ processResources {
     }
 }
 
-def targetJavaVersion = 17
+def targetJavaVersion = 21
 tasks.withType(JavaCompile).configureEach {
     // ensure that the encoding is set to UTF-8, no matter what the system default is
     // this fixes some edge cases with special characters not displaying correctly
@@ -66,7 +66,7 @@ java {
 
 jar {
     from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}"}
+        rename { "${it}_${project.archives_base_name}"}
     }
 }
 
@@ -76,19 +76,10 @@ publishing {
         create("mavenJava", MavenPublication) {
             artifactId = project.archives_base_name
             from components.java
-            artifact remapJar
-            artifact sourcesJar
-        }
-
-        create("lib", MavenPublication) {
-            artifactId = project.archives_base_name
-            from components.java
         }
     }
 
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
     repositories {
-        // Build directly into a local folder for git pushing
         maven {
             name = "LocalMaven"
             url = layout.buildDirectory.dir("repo")
