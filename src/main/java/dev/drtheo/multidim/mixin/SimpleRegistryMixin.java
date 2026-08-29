@@ -1,9 +1,8 @@
 package dev.drtheo.multidim.mixin;
 
 import dev.drtheo.multidim.api.MutableRegistry;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.ObjectList;
-import org.jetbrains.annotations.Nullable;
+import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,7 +20,7 @@ public abstract class SimpleRegistryMixin<T> implements MutableRegistry<T> {
 
     @Shadow @Final private Map<T, RegistryEntry.Reference<T>> valueToEntry;
 
-    @Shadow @Final private Object2IntMap<T> entryToRawId;
+    @Shadow @Final private Reference2IntMap<T> entryToRawId;
 
     @Shadow @Final private ObjectList<RegistryEntry.Reference<T>> rawIdToEntry;
 
