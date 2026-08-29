@@ -1,5 +1,6 @@
 package dev.drtheo.multidim.api;
 
+import net.minecraft.block.entity.Spawner;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListener;
@@ -9,7 +10,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.storage.LevelStorage;
-import net.minecraft.world.spawner.Spawner;
+import net.minecraft.world.spawner.SpecialSpawner;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class MultiDimServerWorld extends ServerWorld {
 
     private final WorldBlueprint blueprint;
 
-    public MultiDimServerWorld(WorldBlueprint blueprint, MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> worldKey, DimensionOptions dimensionOptions, WorldGenerationProgressListener worldGenerationProgressListener, List<Spawner> spawners, @Nullable RandomSequencesState randomSequencesState, boolean created) {
+    public MultiDimServerWorld(WorldBlueprint blueprint, MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> worldKey, DimensionOptions dimensionOptions, WorldGenerationProgressListener worldGenerationProgressListener, List<SpecialSpawner> spawners, @Nullable RandomSequencesState randomSequencesState, boolean created) {
         super(server, workerExecutor, session, properties, worldKey, dimensionOptions, worldGenerationProgressListener, false, blueprint.seed(), spawners, blueprint.shouldTickTime(), randomSequencesState);
 
         this.blueprint = blueprint;

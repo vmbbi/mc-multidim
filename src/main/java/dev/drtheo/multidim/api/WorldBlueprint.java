@@ -7,6 +7,8 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.SimpleRegistry;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryInfo;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.util.Identifier;
@@ -21,10 +23,11 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.UnmodifiableLevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
-import net.minecraft.world.spawner.Spawner;
+import net.minecraft.world.spawner.SpecialSpawner;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Executor;
 
 public class WorldBlueprint {
@@ -142,8 +145,14 @@ public class WorldBlueprint {
         }
 
         if (!typeRegistry.contains(typeKey))
-            return typeRegistry.add(typeKey, this.type, Lifecycle.stable());
-
+            return typeRegistry.add(
+                    typeKey,
+                    this.type,
+                    new RegistryEntryInfo(
+                            Optional.empty(),
+                            Lifecycle.stable()
+                    )
+            );
         return typeRegistry.getEntry(typeKey).orElse(null);
     }
 
@@ -159,6 +168,6 @@ public class WorldBlueprint {
     }
 
     public interface WorldCreator {
-        MultiDimServerWorld create(WorldBlueprint blueprint, MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> worldKey, DimensionOptions dimensionOptions, WorldGenerationProgressListener worldGenerationProgressListener, List<Spawner> spawners, @Nullable RandomSequencesState randomSequencesState, boolean created);
+        MultiDimServerWorld create(WorldBlueprint blueprint, MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> worldKey, DimensionOptions dimensionOptions, WorldGenerationProgressListener worldGenerationProgressListener, List<SpecialSpawner> spawners, @Nullable RandomSequencesState randomSequencesState, boolean created);
     }
 }
