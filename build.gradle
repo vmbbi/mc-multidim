@@ -87,8 +87,16 @@ publishing {
     // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
     repositories {
         maven {
-            name = "gh"
-            url = layout.projectDirectory.dir("../maven-repo")
+            name = "Codeberg"
+            url = uri("https://codeberg.org/api/packages/vmbbi/maven")
+
+            credentials(HttpHeaderCredentials) {
+                name = "Authorization"
+                value = "token " + (findProperty("codebergToken") ?: System.getenv("CODEBERG_TOKEN"))
+            }
+            authentication {
+                header(HttpHeaderAuthentication)
+            }
         }
     }
 }
@@ -98,4 +106,6 @@ tasks.register("pushRepo", Exec) {
     commandLine("$path/deploy.bat")
 }
 
-tasks.publishLibPublicationToGhRepository.finalizedBy pushRepo
+tasks.named('publish') {
+    dependsOn 'publishLibPublicationToCodebergRepository'
+}

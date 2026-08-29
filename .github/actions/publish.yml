@@ -1,0 +1,39 @@
+name: Automated Builds
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - src/**
+      - build.gradle
+      - build.gradle.kts
+      - gradle.properties
+      - settings.gradle
+      - gradle/**
+      - gradlew
+      - gradlew.bat
+      - versioning.gradle
+      - .github/workflows/publish.yml
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Publish to Codeberg Maven
+        env:
+          CODEBERG_TOKEN: ${{ secrets.CODEBERG_TOKEN }}
+        run: ./gradlew publishAllPublicationsToCodebergRepository
