@@ -1,7 +1,7 @@
 package dev.drtheo.multidim.api;
 
 import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.drtheo.multidim.impl.AbstractChunkGenerator;
 import net.minecraft.block.BlockState;
@@ -34,13 +34,12 @@ import net.minecraft.world.gen.structure.Structure;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.stream.Stream;
 
 public class VoidChunkGenerator extends AbstractChunkGenerator {
 
-    public static final Codec<VoidChunkGenerator> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Biome.REGISTRY_CODEC.stable().fieldOf("biome").forGetter(g -> g.biome)
+    public static final MapCodec<VoidChunkGenerator> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Biome.REGISTRY_CODEC.fieldOf("biome").forGetter(g -> g.biome)
     ).apply(instance, instance.stable(VoidChunkGenerator::new)));
 
     private static final VerticalBlockSample EMPTY_SAMPLE = new VerticalBlockSample(0, new BlockState[0]);
@@ -57,11 +56,11 @@ public class VoidChunkGenerator extends AbstractChunkGenerator {
     }
 
     public VoidChunkGenerator(Registry<Biome> biomeRegistry, RegistryKey<Biome> biome) {
-        this(biomeRegistry.getEntry(biome).get());
+        this(biomeRegistry.getEntry(biome).orElseThrow());
     }
 
     @Override
-    protected Codec<? extends ChunkGenerator> getCodec() {
+    protected MapCodec<? extends ChunkGenerator> getCodec() {
         return CODEC;
     }
 
@@ -69,7 +68,7 @@ public class VoidChunkGenerator extends AbstractChunkGenerator {
     public void addStructureReferences(StructureWorldAccess world, StructureAccessor accessor, Chunk chunk) { }
 
     @Override
-    public CompletableFuture<Chunk> populateNoise(Executor executor, Blender blender, NoiseConfig noiseConfig, StructureAccessor structureAccessor, Chunk chunk) {
+    public CompletableFuture<Chunk> populateNoise(Blender blender, NoiseConfig noiseConfig, StructureAccessor structureAccessor, Chunk chunk) {
         return CompletableFuture.completedFuture(chunk);
     }
 
