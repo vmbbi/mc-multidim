@@ -39,12 +39,9 @@ jobs:
       - name: Build Maven Repository
         run: ./gradlew publishAllPublicationsToLocalMavenRepository
 
-      - name: Checkout target Codeberg repository
-        uses: actions/checkout@v4
-        with:
-          repository: vmbbi/maven
-          token: ${{ secrets.CODEBERG_TOKEN }}
-          path: target-repo
+      - name: Clone target Codeberg repository
+        run: |
+           git clone https://${{ secrets.CODEBERG_TOKEN }}@codeberg.org/vmbbi/maven.git target-repo
 
       - name: Copy build artifacts and push to Codeberg
         run: |
