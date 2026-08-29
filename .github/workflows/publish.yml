@@ -41,22 +41,20 @@ jobs:
 
       - name: Clone target Codeberg repository
         run: |
-          git clone -b maven --single-branch https://${{ secrets.CODEBERG_TOKEN }}@codeberg.org/vmbbi/pages.git target-repo
+            # Clone ONLY the maven branch
+            git clone -b maven --single-branch https://${{ secrets.CODEBERG_TOKEN }}@codeberg.org/vmbbi/pages.git target-repo
 
       - name: Copy build artifacts and push to Codeberg
         run: |
-          # Copy built artifacts into the target repo directory
-          cp -R build/repo/* target-repo/
-          
-          cd target-repo
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          
-          git add .
-          # Check if there are changes before committing
-          if ! git diff --cached --quiet; then
-            git commit -m "chore: publish artifacts [skip ci]"
-            git push https://${{ secrets.CODEBERG_TOKEN }}@codeberg.org/vmbbi/pages.git HEAD:maven
-          else
-            echo "No changes to commit."
-          fi
+                cp -R build/repo/* target-repo/
+                cd target-repo
+                git config user.name "github-actions[bot]"
+                git config user.email "github-actions[bot]@users.noreply.github.com"
+                git add .
+                if ! git diff --cached --quiet; then
+                  git commit -m "chore: publish artifacts [skip ci]"
+                  # Push specifically back to the maven branch
+                  git push origin HEAD:maven
+                else
+                  echo "No changes to commit."
+                fi
