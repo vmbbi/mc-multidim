@@ -76,16 +76,13 @@ publishing {
         create("mavenJava", MavenPublication) {
             artifactId = project.archives_base_name
             from components.java
+            artifact remapJar
+            artifact sourcesJar
         }
 
         create("lib", MavenPublication) {
             artifactId = project.archives_base_name
             from components.java
-        }
-
-        mavenJava(MavenPublication) {
-            artifact remapJar
-            artifact sourcesJar
         }
     }
 
