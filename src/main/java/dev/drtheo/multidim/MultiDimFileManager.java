@@ -118,7 +118,7 @@ public class MultiDimFileManager {
     public static Saved readFromFile(MultiDim multidim, String namespace, Path file) {
         String fileName = file.getFileName().toString();
 
-        Identifier id = new Identifier(
+        Identifier id = Identifier.of(
                 namespace, fileName.substring(0, fileName.length() - 5) // remove .json suffix
         );
 
