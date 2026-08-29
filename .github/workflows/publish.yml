@@ -44,6 +44,13 @@ jobs:
             # Clone ONLY the maven branch
             git clone -b maven --single-branch https://${{ secrets.CODEBERG_TOKEN }}@codeberg.org/vmbbi/pages.git target-repo
 
+            cd target-repo
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+  
+            git fetch origin master
+            git merge origin/master --no-edit
+
       - name: Copy build artifacts and push to Codeberg
         run: |
                 cp -R build/repo/* target-repo/
