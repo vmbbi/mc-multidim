@@ -1,25 +1,23 @@
 package dev.drtheo.multidim.mixin;
 
-import com.mojang.serialization.Lifecycle;
 import dev.drtheo.multidim.api.MutableRegistry;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.ObjectList;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.SimpleRegistry;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-import java.util.List;
 import java.util.Map;
+import net.minecraft.registry.SimpleRegistry;
+import net.minecraft.registry.Registry;
+import net.minecraft.util.Identifier;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryInfo;
 
 @Mixin(SimpleRegistry.class)
 public abstract class SimpleRegistryMixin<T> implements MutableRegistry<T> {
-
-    @Shadow @Final private Map<Identifier, RegistryEntry.Reference<T>> idToEntry;
 
     @Shadow @Final private Map<T, RegistryEntry.Reference<T>> valueToEntry;
 
@@ -29,35 +27,33 @@ public abstract class SimpleRegistryMixin<T> implements MutableRegistry<T> {
 
     @Shadow @Final private Map<RegistryKey<T>, RegistryEntry.Reference<T>> keyToEntry;
 
-    @Shadow @Final private Map<T, Lifecycle> entryToLifecycle;
-
-    @Shadow @Nullable private List<RegistryEntry.Reference<T>> cachedEntries;
+    @Shadow @Final private Map<T, RegistryEntryInfo> keyToEntryInfo;
 
     @Shadow private boolean frozen;
 
-    @Shadow public abstract RegistryEntry.Reference<T> add(RegistryKey<T> key, T entry, Lifecycle lifecycle);
+    @Shadow public abstract RegistryKey<? extends Registry<T>> getKey();
+
+    // Changed parameter from Lifecycle to RegistryEntryInfo
+    @Shadow public abstract RegistryEntry.Reference<T> add(RegistryKey<T> key, T value, RegistryEntryInfo info);
 
     @Shadow public abstract boolean contains(RegistryKey<T> key);
 
     @Override
     public boolean multidim$remove(T entry) {
         RegistryEntry.Reference<T> registryEntry = this.valueToEntry.get(entry);
-        int rawId = this.entryToRawId.removeInt(entry);
+        if (registryEntry == null)
+            return false;
 
+        int rawId = this.entryToRawId.removeInt(entry);
         if (rawId == -1)
             return false;
 
         try {
             this.rawIdToEntry.set(rawId, null);
 
-            this.idToEntry.remove(registryEntry.registryKey().getValue());
             this.keyToEntry.remove(registryEntry.registryKey());
-
-            this.entryToLifecycle.remove(entry);
+            this.keyToEntryInfo.remove(entry);
             this.valueToEntry.remove(entry);
-
-            if (this.cachedEntries != null)
-                this.cachedEntries.remove(registryEntry);
 
             return true;
         } catch (Throwable e) {
@@ -69,7 +65,9 @@ public abstract class SimpleRegistryMixin<T> implements MutableRegistry<T> {
 
     @Override
     public boolean multidim$remove(Identifier key) {
-        RegistryEntry.Reference<T> entry = this.idToEntry.get(key);
+        RegistryKey<T> registryKey = RegistryKey.of(this.getKey(), key);
+        RegistryEntry.Reference<T> entry = this.keyToEntry.get(registryKey);
+
         return entry != null && entry.hasKeyAndValue() && this.multidim$remove(entry.value());
     }
 
@@ -94,7 +92,7 @@ public abstract class SimpleRegistryMixin<T> implements MutableRegistry<T> {
     }
 
     @Override
-    public RegistryEntry.Reference<T> multidim$add(RegistryKey<T> key, T entry, Lifecycle lifecycle) {
-        return this.add(key, entry, lifecycle);
+    public RegistryEntry.Reference<T> multidim$add(RegistryKey<T> key, T entry, RegistryEntryInfo info) {
+        return this.add(key, entry, info);
     }
 }

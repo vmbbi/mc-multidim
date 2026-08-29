@@ -3,6 +3,7 @@ package dev.drtheo.multidim.api;
 import com.mojang.serialization.Lifecycle;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryInfo;
 import net.minecraft.util.Identifier;
 
 public interface MutableRegistry<T> {
@@ -14,5 +15,5 @@ public interface MutableRegistry<T> {
     boolean multidim$isFrozen();
 
     boolean multidim$contains(RegistryKey<T> key);
-    RegistryEntry.Reference<T> multidim$add(RegistryKey<T> key, T entry, Lifecycle lifecycle);
+    RegistryEntry.Reference<T> multidim$add(RegistryKey<T> key, T entry, RegistryEntryInfo info);
 }

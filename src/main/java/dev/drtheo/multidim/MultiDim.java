@@ -12,6 +12,8 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntryInfo;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -26,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public class MultiDim {
@@ -155,7 +158,7 @@ public class MultiDim {
                 .getKey().map(RegistryKey::getValue).orElse(blueprint.id()));
 
         if (!dimensionsRegistry.multidim$contains(key))
-            dimensionsRegistry.multidim$add(key, options, Lifecycle.stable());
+            dimensionsRegistry.multidim$add(key, options, new RegistryEntryInfo(Optional.empty(), Lifecycle.stable()));
 
         if (wasFrozen)
             dimensionsRegistry.multidim$freeze();
