@@ -33,7 +33,6 @@ public abstract class SimpleRegistryMixin<T> implements MutableRegistry<T> {
 
     @Shadow public abstract RegistryKey<? extends Registry<T>> getKey();
 
-    // Changed parameter from Lifecycle to RegistryEntryInfo
     @Shadow public abstract RegistryEntry.Reference<T> add(RegistryKey<T> key, T value, RegistryEntryInfo info);
 
     @Shadow public abstract boolean contains(RegistryKey<T> key);
@@ -92,7 +91,7 @@ public abstract class SimpleRegistryMixin<T> implements MutableRegistry<T> {
     }
 
     @Override
-    public RegistryEntry.Reference<T> multidim$add(RegistryKey<T> key, T entry, RegistryEntryInfo info) {
-        return this.add(key, entry, info);
+    public RegistryEntry.Reference<T> multidim$add(RegistryKey<T> key, T value, RegistryEntryInfo info) {
+        return this.add(key, value, info);
     }
 }
